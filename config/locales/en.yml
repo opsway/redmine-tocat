@@ -1,0 +1,9 @@
+# English strings go here for Rails i18n
+en:
+  label_api_settings: "API"
+  label_api_description: "Set server, login and assword for your TOCAT service"
+
+  label_tocat_plugin: "TOCAT Client"
+  label_tocat_server: "Server address:"
+  label_tocat_login: "Login:"
+  label_tocat_password: "Password:"

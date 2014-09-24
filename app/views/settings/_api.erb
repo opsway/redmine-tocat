@@ -1,0 +1,17 @@
+<fieldset xmlns="http://www.w3.org/1999/html">
+  <legend><%= l(:label_api_settings)%></legend>
+  <strong><%= l(:label_api_description)%></strong>
+  <p>
+    <%if @settings[:api]%>
+        <%= label_tag l(:label_tocat_server)%>     <%=	 text_field_tag("settings[api][server]", @settings[:api][:server]) %></br>
+        <%= label_tag l(:label_tocat_login)%>      <%=	 text_field_tag("settings[api][login]", @settings[:api][:login]) %></br>
+        <%= label_tag l(:label_tocat_password)%>   <%=	 password_field_tag("settings[api][password]", @settings[:api][:password]) %></br>
+    <%else%>
+        <%= label_tag l(:label_tocat_server)%>     <%=	 text_field("settings[api]", "server") %></br>
+        <%= label_tag l(:label_tocat_login)%>      <%=	 text_field("settings[api]", "login") %></br>
+        <%= label_tag l(:label_tocat_password)%>   <%=	 password_field("settings[api]", "login") %></br>
+
+  <%end%>
+  </p>
+</fieldset>
+
