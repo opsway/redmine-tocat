@@ -14,3 +14,4 @@ Redmine::Plugin.register :redmine_tocat do
   }, :partial => 'settings/settings'
 
 end
+ require 'redmine_tocat/redmine_tocat'

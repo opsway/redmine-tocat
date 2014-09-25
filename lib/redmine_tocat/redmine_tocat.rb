@@ -7,6 +7,8 @@ Rails.configuration.to_prepare do
   #patches
 
   #hooks
+  require 'redmine_tocat/hooks/view_project_hook'
+  require 'redmine_tocat/hooks/view_issue_hook'
 end
 
 module RedmineTocat

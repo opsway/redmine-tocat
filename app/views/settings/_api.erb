@@ -6,10 +6,17 @@
         <%= label_tag l(:label_tocat_server)%>     <%=	 text_field_tag("settings[api][server]", @settings[:api][:server]) %></br>
         <%= label_tag l(:label_tocat_login)%>      <%=	 text_field_tag("settings[api][login]", @settings[:api][:login]) %></br>
         <%= label_tag l(:label_tocat_password)%>   <%=	 password_field_tag("settings[api][password]", @settings[:api][:password]) %></br>
+        <% if @settings[:api][:active]%>
+            <%= label_tag l(:label_tocat_on)%>         <%=	 check_box_tag "settings[api][active]", '1',true %></br>
+        <%else%>
+            <%= label_tag l(:label_tocat_on)%>         <%=	 check_box_tag "settings[api][active]", '1',false %></br></br>
+        <%end%>
     <%else%>
         <%= label_tag l(:label_tocat_server)%>     <%=	 text_field("settings[api]", "server") %></br>
         <%= label_tag l(:label_tocat_login)%>      <%=	 text_field("settings[api]", "login") %></br>
-        <%= label_tag l(:label_tocat_password)%>   <%=	 password_field("settings[api]", "login") %></br>
+        <%= label_tag l(:label_tocat_password)%>   <%=	 password_field("settings[api]", "password") %></br>
+        <%= label_tag l(:label_tocat_on)%>         <%=	 check_box_tag("settings[api][active]", "active") %></br>
+
 
   <%end%>
   </p>

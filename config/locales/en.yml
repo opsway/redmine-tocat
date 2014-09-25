@@ -7,3 +7,7 @@ en:
   label_tocat_server: "Server address:"
   label_tocat_login: "Login:"
   label_tocat_password: "Password:"
+  label_tocat_on: "Show budgets data?"
+
+  label_budget: "Budget"
+  text_budget: "Budget:"
