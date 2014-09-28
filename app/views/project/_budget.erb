@@ -1,8 +1,8 @@
 <%if RedmineTocat.settings[:api]%>
     <%if RedmineTocat.settings[:api][:active]%>
-        <%@budget = Tocat.project_budget(@project)%>
+        <% @budget = RedmineTocatApi.get_budget_for_project(@project) %>
         <%if !@budget%>
-            <%if Tocat.errors%>
+            <% if RedmineTocatApi.errors %>
                 <style>
                     div.budget h3
                     {
@@ -22,8 +22,8 @@
                   <h3><%=l(:label_budget)%></h3>
                   <p>
                     <% if User.current.developer? %>
-                        <strong><%= Tocat.errors %> </strong>
-                    <% end %>
+                        <strong>Something went wrong. Please, contact with you redmine administrator.</strong>
+                  <% end %>
                   </p>
                 </div>
             <% end%>

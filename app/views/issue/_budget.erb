@@ -1,5 +1,6 @@
 <%if RedmineTocat.settings[:api]%>
     <%if RedmineTocat.settings[:api][:active]%>
+        <% @budget = RedmineTocatApi.get_budget_for_issue(@issue) %>
         <%if @budget%>
             <script type="text/javascript" charset="utf-8">
               var last_table_element = $$("table.attributes tr").last().select("td")[0];
