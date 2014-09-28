@@ -71,12 +71,12 @@ class RedmineTocatApi
 
     end
     raise ArgumentError, "Error while getting project budget. Function should use with project object or fixnum, but it get #{issue.class.name}", caller if wrong_argument
-    json = {
-        'uid' => response['uid'],
-        'ticket_id' => issue,
-        'budget' => budget
-    }
     begin
+      json = {
+          'uid' => response['uid'],
+          'ticket_id' => issue,
+          'budget' => budget
+      }
       @issue_resource[issue].put json.to_json, :content_type => 'application/json'
     rescue Exception => @e
     end
