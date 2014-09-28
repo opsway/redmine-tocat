@@ -1,6 +1,6 @@
 Redmine::Plugin.register :redmine_tocat do
   name 'Redmine Tocat plugin'
-  author 'Aleksander Gornov'
+  author 'Alexander Gornov'
   description 'This is a Redmine client for TOCAT service'
   version '0.0.1'
   url 'https://github.com/opsway/tocat'
