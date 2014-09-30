@@ -1,0 +1,60 @@
+<% if RedmineTocat.settings[:api] %>
+    <% if RedmineTocat.settings[:api][:active] %>
+        <p id="order_select" style="">
+          <label for="issue_order"><%= l(:label_order_select) %></label>
+          <%= select("order", "order_id", RedmineTocatApi.get_orders(1).collect { |p| [p[1], p[0]] }) %>
+        </p>
+        <p id="budget">
+          <label for="budget"><%= l(:label_budget) %></label>
+          <span id='budget_show' onclick="budget_click_handler(this)" style='cursor: pointer;'> <strong><%= number_to_currency(@budget) %></strong></span>
+          <span id='budget_edit' style="display: none">
+            <%= text_field_tag("issue_budget", RedmineTocatApi.get_budget_for_issue(@issue), :onblur => "budget_blur_handler(this)") %>
+            / <span id='budget_max'> 100 </span> $
+	      </span>
+        </p>
+        <script type="text/javascript" charset="utf-8">
+
+
+            function set_budget(element) {
+                var budget = +element.getValue();
+                new Ajax.Request('/set_budget', {
+                    asynchronous: true,
+                    method: 'put',
+                    parameters: {
+                        'budget': budget,
+                        'ticket_id': "<%= @issue.id%>"
+                    },
+                    onLoading: function () {
+                        $$('#ajax-indicator')[0].hide();
+
+                    },
+                    onSuccess: function () {
+                        element.up().hide();
+                        element.up().previous().update('<strong> $' + budget + '</strong>').show();
+                    },
+                    onFailure: function () {
+                        element.next().hide();
+
+                    }
+                });
+            }
+            ;
+
+
+            function budget_blur_handler(element) {
+                set_budget(element);
+            }
+
+            function budget_click_handler(element) {
+                element.hide();
+                element.next().show();
+            }
+
+            var order_box = $("order_select");
+            var budget_edit = $("budget");
+            $$('.splitcontentleft')[0].down("p").insert({after: order_box});
+            $$('.splitcontentright')[0].down("p").insert({before: budget_edit});
+
+        </script>
+    <% end %>
+<% end %>
