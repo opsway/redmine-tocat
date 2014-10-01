@@ -58,31 +58,24 @@ class RedmineTocatApi
   def self.get(id, object)
     url, auth = generate_url(id, object)
     begin
-      if object == 'project'
-        RestClient.get(url, { :accept => :json, :authorization => auth }) { |response, request, result, &block|
-          case response.code
-            when 200
-              response
-            when 404
-              @e = "404, object not found. Looks like TOCAT sever has no record for this object."
-              return nil
-            else
-              response.return!(request, result, &block)
-          end
-        }
-      elsif object == 'issue'
-        RestClient.get(url, { :accept => :json, :authorization => auth }) { |response, request, result, &block|
-          case response.code
-            when 200
-              response
-            when 404
-              @e = "404, object not found. Looks like TOCAT sever has no record for this object."
-              return nil
-            else
-              response.return!(request, result, &block)
-          end
-        }
+      case object
+        when 'issue'
+          json = {
+              "type" => "ticket",
+              'id'   => id,
+          }
       end
+      RestClient.post(url, { :accept => :json, :authorization => auth }) { |response, request, result, &block|
+        case response.code
+          when 200
+            response
+          when 404
+            @e = "404, object not found. Looks like TOCAT sever has no record for this object."
+            return nil
+          else
+            response.return!(request, result, &block)
+        end
+      }
     rescue SocketError => @e
     end
   end
@@ -117,11 +110,12 @@ class RedmineTocatApi
     login    = RedmineTocat.settings[:api][:login] unless login
     password = RedmineTocat.settings[:api][:password] unless password
     auth     = 'Basic ' + Base64.encode64("#{login}:#{password}").chomp
-    case object
-      when 'project'
-        return RedmineTocat.settings[:api][:server] + "/project/#{id}", auth
-      when 'issue'
-        return RedmineTocat.settings[:api][:server] + "/ticket/#{id}", auth
-    end
+    return RedmineTocat.settings[:api][:server] + "/listOrders", auth
+    # case object
+    #   when 'project'
+    #     return RedmineTocat.settings[:api][:server] + "/project/#{id}", auth
+    #   when 'issue'
+    #     return RedmineTocat.settings[:api][:server] + "/ticket/#{id}", auth
+    # end
   end
 end
