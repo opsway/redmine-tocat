@@ -1,2 +1,24 @@
-= redmine_tocat
-This is a redmine cluent for Theory of Constraints Accounting for Teams (TOCAT) service.
+= Redmine Tocat Plugin
+This is a redmine cluent for Theory of Constraints Accounting for Teams (TOCAT) service. 
+See https://github.com/opsway/tocat for details.
+ 
+
+
+=Installation
+[As standalone plugin]
+  Unzip plugin into ./plugins/. This would result in a directory-path like:
+    ./plugins/redmine_tocat/init.rb
+  Install dependent ruby gems by following command:
+    bundle install --without development test
+
+
+[As submodule for you redmine git-repo]
+  Add sumbodule to your repo:
+    $ git submodule add git@github.com:opsway/redmine-tocat.git ./plugins/redmine_tocat
+  Commit changes:
+    $ git commit -am 'add submodule rack'
+  Push changes to server (if you or your team has dedicated git server):  
+    $ git push 
+  
+  
+Then you should go to "Administration -> Plugins -> Redmine Tocat plugin" and setup plugin global settings.  
