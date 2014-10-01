@@ -17,7 +17,7 @@ class RedmineTocatApi
     else
       raise ArgumentError, "Error while getting project budget. Function should use with project object or fixnum, but it get #{project.class.name}", caller
     end
-    JSON.parse(request)['budget'] if request
+    JSON.parse(request)['totalBudget'] if request
   end
 
   def self.get_budget_for_issue(issue)
@@ -44,28 +44,61 @@ class RedmineTocatApi
     set(issue, budget, JSON.parse(response)) if response
   end
 
-  def self.get_orders(issue)
-    ORDERS #FIXME Возвращаем это пока не заработает апи. Потом переписать.
+  def self.get_orders
+    orders = []
+    JSON.parse(get(1, "orders")).each do |order|
+      orders << [order[1]['uid'], order[1]['name']]
+    end
+    return orders
+  end
+
+  def self.get_order(issue)
+    if issue.class.name == "Fixnum"
+      response = get(issue, "order")
+    elsif issue.class.name == "Issue"
+      issue    = issue.id
+      response = get(issue, "order")
+    else
+      raise ArgumentError, "Error while getting project budget. Function should use with project object or fixnum, but it get #{issue.class.name}", caller
+    end
   end
 
   def self.move_issue(issue, order)
-    #FIXME переносим тикет в другой ордер. Пока нет апи - возврашаем 1
-    true
+    set(issue, 1, '', order)
   end
 
   protected
 
-  def self.get(id, object)
-    url, auth = generate_url(id, object)
+  def self.get(id, object, project = false)
+    url, auth = generate_url(id, 'get')
     begin
       case object
+       when 'orders'
+          json = {}.to_json
+          url, auth = generate_url(id, 'order')
+        when 'order'
+          url, auth = generate_url(id, 'order')
+          if project
+            json = {
+                'project_id' => id
+            }.to_json
+          else
+            json = {
+                'ticket_id' => id
+            }.to_json
+          end
         when 'issue'
           json = {
               "type" => "ticket",
-              'id'   => id,
-          }
+              'id'   => id
+          }.to_json
+        when 'project'
+          json = {
+              "type" => "project",
+              'id'   => id
+          }.to_json
       end
-      RestClient.post(url, { :accept => :json, :authorization => auth }) { |response, request, result, &block|
+      RestClient.post(url, json, :accept => :json, :content_type => 'application/json', :authorization => auth ) { |response, request, result, &block|
         case response.code
           when 200
             response
@@ -80,16 +113,25 @@ class RedmineTocatApi
     end
   end
 
-  def self.set(id, budget, issue)
-    url, auth = generate_url(id, 'issue')
-    begin
-      json = {
-          'uid'       => issue['uid'].to_i,
-          'ticket_id' => issue['ticket_id'].to_i,
-          'budget' => budget
-      }.to_json
+  def self.set(id, budget, issue, order_id = nil)
 
-      RestClient.put(url, json, :content_type => :json, :accept => :json, :authorization => auth) { |response, request, result, &block|
+    begin
+      if order_id
+        json = {
+            'ticket_id' => id,
+            'order_uid' => order_id
+        }.to_json
+        url, auth = generate_url(id, 'set_order')
+      else
+        json = {
+            'type'       => 'ticket',
+            'id' => issue['ticket_id'].to_i,
+            'budget' => budget
+        }.to_json
+        url, auth = generate_url(id, 'set')
+      end
+
+      RestClient.post(url, json, :content_type => :json, :accept => :json, :authorization => auth) { |response, request, result, &block|
         case response.code
           when 200
             return true
@@ -106,16 +148,20 @@ class RedmineTocatApi
     end
   end
 
-  def self.generate_url(id, object)
+  def self.generate_url(id, method)
     login    = RedmineTocat.settings[:api][:login] unless login
     password = RedmineTocat.settings[:api][:password] unless password
     auth     = 'Basic ' + Base64.encode64("#{login}:#{password}").chomp
-    return RedmineTocat.settings[:api][:server] + "/listOrders", auth
-    # case object
-    #   when 'project'
-    #     return RedmineTocat.settings[:api][:server] + "/project/#{id}", auth
-    #   when 'issue'
-    #     return RedmineTocat.settings[:api][:server] + "/ticket/#{id}", auth
-    # end
+    #return RedmineTocat.settings[:api][:server] + "/getBudget", auth
+     case method
+       when 'set_order'
+         return RedmineTocat.settings[:api][:server] + "api/rpc/v1/setOrderTicket", auth
+       when 'order'
+         return RedmineTocat.settings[:api][:server] + "api/rpc/v1/listOrders", auth
+       when 'set'
+         return RedmineTocat.settings[:api][:server] + "api/rpc/v1/setBudget", auth
+       when 'get'
+         return RedmineTocat.settings[:api][:server] + "api/rpc/v1/getBudget", auth
+     end
   end
 end

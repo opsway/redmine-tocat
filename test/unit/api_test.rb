@@ -9,20 +9,23 @@ class RedmineTocatApiTest < Test::Unit::TestCase
     RedmineTocat.settings[:api][:server]   = 'http://test.test'
     RedmineTocat.settings[:api][:login]    = 'user'
     RedmineTocat.settings[:api][:password] = 'pass'
-    @ticket                                = { "uid" => 1, "ticket_id" => 10000, "budget" => 123 }
+    @ticket_on_server                      = { "uid" => 1, "ticket_id" => 10000, "budget" => 123 }
+    @ticket_on_client                      = {"type" => "ticket", "id" => 10000}
     @new_ticket                            = { "uid" => 1, "ticket_id" => 10000, "budget" => 150 }
     @project                               = { "uid" => 1, "project_id" => 14, "budget" => 100.000 }
-    FakeWeb.register_uri(:get, "http://user:pass@test.test/ticket/#{@ticket['ticket_id']}", :body => @ticket.to_json, :status => ["200", "OK"])
-    FakeWeb.register_uri(:put, "http://user:pass@test.test/ticket/#{@ticket['ticket_id']}", :body => @new_ticket.to_json, :status => ["200", "OK"], :content_type => "application/json")
-    FakeWeb.register_uri(:get, "http://user:pass@test.test/project/#{@project['project_id']}", :body => @project.to_json, :status => ["200", "OK"])
+
+    FakeWeb.register_uri(:post, "http://user:pass@test.test/getBudget", :body => @ticket_on_server.to_json, :response => ['123',321])
+    puts ''
+    #FakeWeb.register_uri(:post, "http://user:pass@test.test/getBudget", :body => @ticket.to_json, :parameters => @ticket.to_json, :status => ["200", "OK"], :content_type => "application/json")
+
   end
 
   should "get ticket's budget with fixnum passed" do
-    assert_equal @ticket["budget"], RedmineTocatApi.get_budget_for_issue(@ticket['ticket_id']), "Problem while getting budget for issue"
+    assert_equal @ticket_on_server["budget"], RedmineTocatApi.get_budget_for_issue(@ticket_on_server['ticket_id']), "Problem while getting budget for issue"
   end
 
   should "set ticket budget with fixnum passed" do
-    assert_equal true, RedmineTocatApi.set_budget_for_issue(@ticket['ticket_id'], @new_ticket['budget']), "Problem while setting budget for issue"
+    assert_equal true, RedmineTocatApi.set_budget_for_issue(@ticket_on_server['ticket_id'], @new_ticket['budget']), "Problem while setting budget for issue"
   end
 
   should "get project's budget with fixnum passed" do

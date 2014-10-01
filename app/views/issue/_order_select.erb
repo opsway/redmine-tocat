@@ -1,8 +1,9 @@
-<% if RedmineTocat.settings[:api] %>
+<% if User.current.admin?%>
+    <% if RedmineTocat.settings[:api] %>
     <% if RedmineTocat.settings[:api][:active] %>
         <p id="order_select" style="">
           <label for="issue_order"><%= l(:label_order_select) %></label>
-          <%= select("order", "order_id", RedmineTocatApi.get_orders(1).collect { |p| [p[1], p[0]] }) %>
+          <%= select("order", "order_id", RedmineTocatApi.get_orders.collect { |p| [p[1], p[0]] }, :onchange => "move_ticket(this)") %>
         </p>
         <p id="budget">
           <label for="budget"><%= l(:label_budget) %></label>
@@ -14,6 +15,27 @@
         </p>
         <script type="text/javascript" charset="utf-8">
 
+            function move_ticket(select){
+                var order = select.getValue();
+                new Ajax.Request('/move_ticket', {
+                    asynchronous: true,
+                    method: 'put',
+                    parameters: {
+                        'order_id': order,
+                        'ticket_id': "<%= @issue.id%>"
+                    },
+                    onLoading: function () {
+                        $$('#ajax-indicator')[0].hide();
+
+                    },
+                    onSuccess: function () {
+                        alert("Ticket moved");
+                    },
+                    onFailure: function () {
+                        alert("Something wrong");
+                    }
+                });
+            }
 
             function set_budget(element) {
                 var budget = +element.getValue();
@@ -38,7 +60,6 @@
                     }
                 });
             }
-            ;
 
 
             function budget_blur_handler(element) {
@@ -58,3 +79,4 @@
         </script>
     <% end %>
 <% end %>
+<%end%>

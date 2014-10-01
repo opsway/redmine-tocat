@@ -1,4 +1,5 @@
-<% if RedmineTocat.settings[:api] %>
+<% if User.current.admin?%>
+    <% if RedmineTocat.settings[:api] %>
     <% if RedmineTocat.settings[:api][:active] %>
         <% @budget = RedmineTocatApi.get_budget_for_project(@project) %>
         <% if !@budget %>
@@ -48,3 +49,4 @@
         <% end %>
     <% end %>
 <% end %>
+<%end%>

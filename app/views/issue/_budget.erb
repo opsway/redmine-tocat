@@ -1,15 +1,17 @@
-<%if RedmineTocat.settings[:api]%>
-    <%if RedmineTocat.settings[:api][:active]%>
-        <% @budget = RedmineTocatApi.get_budget_for_issue(@issue) %>
-        <%if @budget%>
-            <script type="text/javascript" charset="utf-8">
-              var last_table_element = $$("table.attributes tr").last().select("td")[0];
-              var label = "<th><%=l(:text_budget)%></th>";
-              var value ="<td><strong><%= number_to_currency(@budget) %> </strong></td>";
-              last_table_element.insert({after: label});
-              var last_table_element_ = $$("table.attributes tr").last().select("th")[1];
-              last_table_element_.insert({after: value});
-            </script>
+<% if User.current.admin?%>
+    <%if RedmineTocat.settings[:api]%>
+        <%if RedmineTocat.settings[:api][:active]%>
+            <% @budget = RedmineTocatApi.get_budget_for_issue(@issue) %>
+            <%if @budget%>
+                <script type="text/javascript" charset="utf-8">
+                  var last_table_element = $$("table.attributes tr").last().select("td")[0];
+                  var label = "<th><%=l(:text_budget)%></th>";
+                  var value ="<td><strong><%= number_to_currency(@budget) %> </strong></td>";
+                  last_table_element.insert({after: label});
+                  var last_table_element_ = $$("table.attributes tr").last().select("th")[1];
+                  last_table_element_.insert({after: value});
+                </script>
+            <%end%>
         <%end%>
     <%end%>
 <%end%>
